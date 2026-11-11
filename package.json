@@ -1,0 +1,24 @@
+{
+  "name": "rihlah-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rihlah — Halal Journeys full-stack monorepo (Module 46)",
+  "scripts": {
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "dev": "npm --prefix client run dev",
+    "build:client": "npm --prefix client run build",
+    "seed": "npm --prefix server run seed",
+    "lint:client": "npm --prefix client run lint",
+    "typecheck": "npm --prefix client exec -- tsc -p client --noEmit",
+    "check": "npm run typecheck && npm run lint:client && node --check server/index.js && node --check server/seed.js"
+  },
+  "keywords": [
+    "rihlah",
+    "halal-tourism",
+    "nextjs",
+    "express",
+    "mongodb"
+  ],
+  "license": "ISC"
+}

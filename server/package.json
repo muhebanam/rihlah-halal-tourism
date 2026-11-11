@@ -1,0 +1,29 @@
+{
+  "name": "rihlah-server",
+  "version": "1.0.0",
+  "description": "Backend API server for Rihlah Halal Tourism platform",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "seed": "node seed.js"
+  },
+  "keywords": [
+    "halal-tourism",
+    "express",
+    "mongodb",
+    "rihlah"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mongodb": "^6.15.0"
+  }
+}
+
