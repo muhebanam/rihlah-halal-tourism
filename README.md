@@ -2,6 +2,11 @@
 
 A full-stack Halal & Islamic heritage travel application built with **Next.js 16 (App Router, TypeScript, Tailwind CSS v4, Base UI)** on the client and **Express 5 + MongoDB Native Driver** on the server.
 
+- 🌐 **Live Website (Frontend):** [https://rihlah-halal-tourism.vercel.app](https://rihlah-halal-tourism.vercel.app)
+- ⚙️ **Live Backend API (Render):** [https://rihlah-halal-tourism.onrender.com](https://rihlah-halal-tourism.onrender.com)
+- 🗄️ **Database:** MongoDB Atlas (Cloud)
+- 📦 **GitHub Repository:** [https://github.com/muhebanam/rihlah-halal-tourism](https://github.com/muhebanam/rihlah-halal-tourism)
+
 ## Project Structure
 
 ```text
