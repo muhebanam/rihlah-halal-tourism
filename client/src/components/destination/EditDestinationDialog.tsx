@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, PackageCheck, Pencil, X } from "lucide-react";
+import { Loader2, PackageCheck, Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,7 @@ import type {
   DestinationFormPayload,
   IDestination,
 } from "@/lib/types/destinations";
+import { useLanguage } from "@/context/language-context";
 
 function toFormState(destination: IDestination): DestinationFormPayload {
   return {
@@ -41,6 +42,7 @@ export default function EditDestinationDialog({
   destination: IDestination;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<DestinationFormPayload>(() =>
     toFormState(destination)
@@ -67,27 +69,25 @@ export default function EditDestinationDialog({
     setError(null);
 
     try {
-      const res = await fetch(
-        `${API_BASE_URL}/destination/${destination._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}/destination/${destination._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Failed to update destination");
+        throw new Error(data.details || data.error || "Failed to update package");
       }
 
       setOpen(false);
       router.refresh();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Could not update destination."
+        err instanceof Error ? err.message : "An unexpected error occurred."
       );
     } finally {
       setSubmitting(false);
@@ -100,10 +100,11 @@ export default function EditDestinationDialog({
         render={
           <Button
             variant="outline"
-            className="border-[#047857]/30 text-[#064E3B] hover:bg-[#047857]/5"
+            size="sm"
+            className="border-[#047857]/40 text-[#064E3B] hover:bg-[#047857]/5 cursor-pointer"
           >
-            <Pencil className="size-4 text-[#C9A227]" />
-            Edit
+            <Pencil className="size-3.5 text-[#C9A227]" />
+            {t.editDialog.trigger}
           </Button>
         }
       />
@@ -111,39 +112,37 @@ export default function EditDestinationDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-serif text-2xl text-[#064E3B]">
-            Edit Halal Travel Package
+            {t.editDialog.title}
           </DialogTitle>
           <DialogDescription>
-            Update package details, pricing, or halal facilities for{" "}
+            {t.editDialog.desc}{" "}
             <span className="font-medium text-foreground">
               {destination.name}
             </span>
-            .
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="mt-2">
-          {error && (
-            <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+            {error}
+          </div>
+        )}
 
+        <form onSubmit={handleSubmit} className="mt-4 grid gap-6">
           <DestinationFormFields
             form={form}
             onChange={updateField}
-            idPrefix="edit"
+            idPrefix="edit-dest"
           />
 
-          <div className="mt-7 flex justify-end gap-3">
+          <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
             <Button
               type="button"
               variant="outline"
               disabled={submitting}
               onClick={() => setOpen(false)}
             >
-              <X className="size-4" />
-              Cancel
+              {t.editDialog.cancel}
             </Button>
             <Button
               type="submit"
@@ -153,12 +152,12 @@ export default function EditDestinationDialog({
               {submitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Saving...
+                  {t.editDialog.saving}
                 </>
               ) : (
                 <>
                   <PackageCheck className="size-4 text-[#C9A227]" />
-                  Save Changes
+                  {t.editDialog.save}
                 </>
               )}
             </Button>
@@ -168,4 +167,3 @@ export default function EditDestinationDialog({
     </Dialog>
   );
 }
-

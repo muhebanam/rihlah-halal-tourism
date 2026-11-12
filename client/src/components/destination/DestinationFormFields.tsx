@@ -15,6 +15,7 @@ import {
   HALAL_CATEGORIES,
   type DestinationFormPayload,
 } from "@/lib/types/destinations";
+import { useLanguage } from "@/context/language-context";
 
 interface DestinationFormFieldsProps {
   form: DestinationFormPayload;
@@ -36,14 +37,16 @@ export function DestinationFormFields({
   onChange,
   idPrefix = "dest",
 }: DestinationFormFieldsProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="grid gap-5">
       {/* Destination Name */}
       <div className="grid gap-2">
-        <Label htmlFor={`${idPrefix}-name`}>Destination Name</Label>
+        <Label htmlFor={`${idPrefix}-name`}>{t.addDestination.nameLabel}</Label>
         <Input
           id={`${idPrefix}-name`}
-          placeholder="e.g., Makkah & Madinah Spiritual Umrah"
+          placeholder={t.addDestination.namePlaceholder}
           value={form.name}
           onChange={(e) => onChange("name", e.target.value)}
           required
@@ -53,10 +56,10 @@ export function DestinationFormFields({
       {/* Country + Category */}
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="grid gap-2">
-          <Label htmlFor={`${idPrefix}-country`}>Country</Label>
+          <Label htmlFor={`${idPrefix}-country`}>{t.addDestination.countryLabel}</Label>
           <Input
             id={`${idPrefix}-country`}
-            placeholder="e.g., Saudi Arabia"
+            placeholder={t.addDestination.countryPlaceholder}
             value={form.country}
             onChange={(e) => onChange("country", e.target.value)}
             required
@@ -64,18 +67,18 @@ export function DestinationFormFields({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={`${idPrefix}-category-trigger`}>Category</Label>
+          <Label htmlFor={`${idPrefix}-category`}>{t.addDestination.categoryLabel}</Label>
           <Select
             value={form.category}
-            onValueChange={(value) => onChange("category", value ?? "")}
+            onValueChange={(val) => onChange("category", val || "")}
           >
-            <SelectTrigger id={`${idPrefix}-category-trigger`} className="w-full">
-              <SelectValue placeholder="Select halal category" />
+            <SelectTrigger id={`${idPrefix}-category`}>
+              <SelectValue placeholder={t.addDestination.categorySelectPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              {HALAL_CATEGORIES.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
+              {HALAL_CATEGORIES.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {t.categories[cat as keyof typeof t.categories] || cat}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -83,15 +86,16 @@ export function DestinationFormFields({
         </div>
       </div>
 
-      {/* Price + Duration */}
-      <div className="grid gap-5 sm:grid-cols-2">
+      {/* Price + Duration + Departure Date */}
+      <div className="grid gap-5 sm:grid-cols-3">
         <div className="grid gap-2">
-          <Label htmlFor={`${idPrefix}-price`}>Price (USD)</Label>
+          <Label htmlFor={`${idPrefix}-price`}>{t.addDestination.priceLabel}</Label>
           <Input
             id={`${idPrefix}-price`}
             type="number"
             min="0"
-            placeholder="e.g., 1450"
+            step="1"
+            placeholder={t.addDestination.pricePlaceholder}
             value={form.price}
             onChange={(e) => onChange("price", e.target.value)}
             required
@@ -99,116 +103,98 @@ export function DestinationFormFields({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={`${idPrefix}-duration`}>Duration</Label>
+          <Label htmlFor={`${idPrefix}-duration`}>{t.addDestination.durationLabel}</Label>
           <Input
             id={`${idPrefix}-duration`}
-            placeholder="e.g., 7 Days / 6 Nights"
+            placeholder={t.addDestination.durationPlaceholder}
             value={form.duration}
             onChange={(e) => onChange("duration", e.target.value)}
             required
           />
         </div>
-      </div>
-
-      {/* Halal Dining + Prayer Facilities */}
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor={`${idPrefix}-halalDining`}>Halal Dining Standard</Label>
-          <Input
-            id={`${idPrefix}-halalDining`}
-            placeholder="e.g., 100% Zabiha Halal Certified"
-            value={form.halalDining}
-            onChange={(e) => onChange("halalDining", e.target.value)}
-            required
-          />
-        </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={`${idPrefix}-prayerFacilities`}>
-            Prayer &amp; Masjid Facilities
-          </Label>
+          <Label htmlFor={`${idPrefix}-departure`}>{t.addDestination.departureLabel}</Label>
           <Input
-            id={`${idPrefix}-prayerFacilities`}
-            placeholder="e.g., Nearby Masjid & Prayer Stops"
-            value={form.prayerFacilities}
-            onChange={(e) => onChange("prayerFacilities", e.target.value)}
-            required
-          />
-        </div>
-      </div>
-
-      {/* Departure Date + Image URL */}
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="grid gap-2">
-          <Label htmlFor={`${idPrefix}-departureDate`}>Departure Date</Label>
-          <Input
-            id={`${idPrefix}-departureDate`}
+            id={`${idPrefix}-departure`}
             type="date"
             value={form.departureDate}
             onChange={(e) => onChange("departureDate", e.target.value)}
             required
           />
         </div>
-
-        <div className="grid gap-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor={`${idPrefix}-imageUrl`}>Image URL or Path</Label>
-            <span className="text-[11px] text-muted-foreground">
-              Must start with / or https://
-            </span>
-          </div>
-          <Input
-            id={`${idPrefix}-imageUrl`}
-            type="text"
-            placeholder="e.g., /images/istanbul.jpg or https://..."
-            value={form.imageUrl}
-            onChange={(e) => onChange("imageUrl", e.target.value)}
-            required
-          />
-          {/* Quick local image preset chips */}
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-medium text-muted-foreground">
-              Preset:
-            </span>
-            {LOCAL_IMAGE_PRESETS.map((preset) => (
-              <button
-                key={preset.path}
-                type="button"
-                onClick={() => onChange("imageUrl", preset.path)}
-                className="rounded-md border border-border bg-secondary/80 px-2 py-0.5 text-[11px] font-medium text-secondary-foreground transition-colors hover:bg-[#047857]/10 hover:text-[#064E3B] cursor-pointer"
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
-      {/* Live Image Thumbnail Preview (if path is provided) */}
-      {form.imageUrl?.trim() && (
-        <div className="flex items-center gap-4 rounded-xl border border-border bg-muted/40 p-3">
-          <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-card border border-border">
+      {/* Halal Dining Verification */}
+      <div className="grid gap-2">
+        <Label htmlFor={`${idPrefix}-halal`}>{t.addDestination.diningLabel}</Label>
+        <Input
+          id={`${idPrefix}-halal`}
+          placeholder={t.addDestination.diningPlaceholder}
+          value={form.halalDining}
+          onChange={(e) => onChange("halalDining", e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Prayer Facilities */}
+      <div className="grid gap-2">
+        <Label htmlFor={`${idPrefix}-prayer`}>{t.addDestination.prayerLabel}</Label>
+        <Input
+          id={`${idPrefix}-prayer`}
+          placeholder={t.addDestination.prayerPlaceholder}
+          value={form.prayerFacilities}
+          onChange={(e) => onChange("prayerFacilities", e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Image URL + Presets */}
+      <div className="grid gap-2">
+        <Label htmlFor={`${idPrefix}-image`}>{t.addDestination.imageLabel}</Label>
+        <Input
+          id={`${idPrefix}-image`}
+          type="url"
+          placeholder={t.addDestination.imagePlaceholder}
+          value={form.imageUrl}
+          onChange={(e) => onChange("imageUrl", e.target.value)}
+          required
+        />
+
+        {/* Local bundled image helper chips */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-muted-foreground">
+          <span>{t.addDestination.presetLabel}</span>
+          {LOCAL_IMAGE_PRESETS.map((preset) => (
+            <button
+              key={preset.path}
+              type="button"
+              onClick={() => onChange("imageUrl", preset.path)}
+              className="rounded-md border border-border bg-secondary/60 px-2 py-0.5 font-medium hover:bg-secondary cursor-pointer"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        {form.imageUrl && (
+          <div className="relative mt-2 h-40 w-full overflow-hidden rounded-lg border border-border bg-muted">
             <SafeImage
               src={form.imageUrl}
-              alt="Package preview"
+              alt="Destination image preview"
               fill
               className="object-cover"
             />
           </div>
-          <div className="min-w-0 flex-1 text-xs">
-            <p className="font-medium text-foreground">Image Preview</p>
-            <p className="truncate text-muted-foreground">{form.imageUrl}</p>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Description */}
       <div className="grid gap-2">
-        <Label htmlFor={`${idPrefix}-description`}>Journey Description</Label>
+        <Label htmlFor={`${idPrefix}-desc`}>{t.addDestination.descLabel}</Label>
         <Textarea
-          id={`${idPrefix}-description`}
-          placeholder="Describe the spiritual highlights, Islamic heritage stops, and halal hospitality..."
-          className="min-h-28"
+          id={`${idPrefix}-desc`}
+          rows={4}
+          placeholder={t.addDestination.descPlaceholder}
           value={form.description}
           onChange={(e) => onChange("description", e.target.value)}
           required

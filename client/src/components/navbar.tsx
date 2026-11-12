@@ -3,19 +3,21 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Menu, PlusCircle, X } from "lucide-react";
+import { Compass, Globe, Menu, PlusCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/destinations", label: "Destinations" },
-  { href: "/add-destination", label: "Add Destination" },
-];
+import { useLanguage } from "@/context/language-context";
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { language, toggleLanguage, t } = useLanguage();
+
+  const navLinks = [
+    { href: "/", label: t.nav.home },
+    { href: "/destinations", label: t.nav.destinations },
+    { href: "/add-destination", label: t.nav.addDestination },
+  ];
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -66,22 +68,33 @@ export function Navbar() {
               Rihlah
             </span>
             <span className="text-[10px] font-semibold tracking-[0.22em] text-[#C9A227] uppercase">
-              Halal Journeys
+              {language === "bn" ? "হালাল ভ্রমণ" : "Halal Journeys"}
             </span>
           </div>
         </Link>
 
-        {/* Right: Quick Action */}
-        <div className="flex items-center gap-3">
+        {/* Right: Quick Action & Language Switcher */}
+        <div className="flex items-center gap-2.5">
+          {/* Language Switcher Pill */}
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            title={language === "en" ? "বাংলা ভাষায় পরিবর্তন করুন" : "Switch to English"}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/60 px-3 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-[#047857]/50 hover:bg-[#047857]/10 hover:text-[#064E3B] cursor-pointer"
+          >
+            <Globe className="size-3.5 text-[#047857]" />
+            <span>{t.nav.langSwitchLabel}</span>
+          </button>
+
           <Link href="/add-destination" className="hidden sm:inline-flex">
             <Button variant="outline" size="sm" className="border-[#047857]/30 text-[#064E3B] hover:bg-[#047857]/5">
               <PlusCircle className="size-4 text-[#C9A227]" />
-              Add Package
+              {t.nav.addPackage}
             </Button>
           </Link>
           <Link href="/destinations">
             <Button size="sm" className="bg-[#047857] text-white hover:bg-[#064E3B]">
-              Explore Tours
+              {t.nav.exploreTours}
             </Button>
           </Link>
         </div>
@@ -107,10 +120,27 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
+            <li className="pt-2 border-t border-border">
+              <button
+                type="button"
+                onClick={() => {
+                  toggleLanguage();
+                  setMobileOpen(false);
+                }}
+                className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-semibold text-[#064E3B] bg-[#047857]/10"
+              >
+                <span className="flex items-center gap-2">
+                  <Globe className="size-4 text-[#047857]" />
+                  {language === "en" ? "ভাষা পরিবর্তন করুন" : "Switch Language"}
+                </span>
+                <span className="rounded-full bg-[#047857] px-2.5 py-0.5 text-xs text-white">
+                  {t.nav.langSwitchLabel}
+                </span>
+              </button>
+            </li>
           </ul>
         </div>
       )}
     </header>
   );
 }
-

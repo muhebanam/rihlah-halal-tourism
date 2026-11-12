@@ -1,0 +1,423 @@
+export type Language = "en" | "bn";
+
+export function toBengaliNumber(val: string | number): string {
+  const bnDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+  return String(val).replace(/\d/g, (d) => bnDigits[Number(d)]);
+}
+
+export function formatBilingualPrice(price: string | number, lang: Language): string {
+  if (lang === "bn") {
+    return `$${toBengaliNumber(price)}`;
+  }
+  return `$${price}`;
+}
+
+export function formatBilingualDuration(duration: string, lang: Language): string {
+  if (lang !== "bn") return duration;
+  return duration
+    .replace(/(\d+)\s*Days?/gi, (_, d) => `${toBengaliNumber(d)} দিন`)
+    .replace(/(\d+)\s*Nights?/gi, (_, n) => `${toBengaliNumber(n)} রাত`);
+}
+
+export const translations = {
+  en: {
+    common: {
+      halalCertified: "100% Zabiha Halal Certified",
+      prayerSchedule: "Nearby Masjid & Prayer-Friendly Schedule",
+    },
+    nav: {
+      home: "Home",
+      destinations: "Destinations",
+      addDestination: "Add Destination",
+      addPackage: "Add Package",
+      exploreTours: "Explore Tours",
+      langSwitchLabel: "বাংলা",
+    },
+    banner: {
+      badge: "Curated Halal & Spiritual Travel",
+      headingLine1: "Discover Sacred &",
+      headingLine2: "Halal Journeys",
+      subheading:
+        "Explore Umrah & Ziyarat sanctuaries, iconic Islamic heritage cities, and peaceful family-friendly halal resorts designed around prayer times and certified cuisine.",
+      exploreBtn: "Explore Destinations",
+      addBtn: "Add Travel Package",
+      searchLabel: "Destination or Country",
+      searchPlaceholder: "e.g., Makkah, Istanbul, Granada...",
+      categoryLabel: "Journey Type",
+      allCategories: "All Halal Categories",
+      budgetLabel: "Max Budget (USD)",
+      budgetPlaceholder: "e.g., 1600",
+      searchBtn: "Search",
+    },
+    categories: {
+      "Umrah & Ziyarat": "Umrah & Ziyarat",
+      "Islamic Heritage": "Islamic Heritage",
+      "Halal Beach Resort": "Halal Beach Resort",
+      "Nature & Mountain": "Nature & Mountain",
+      "Family Halal": "Family Halal",
+    },
+    whyChooseUs: {
+      kicker: "Our Amanah (Trust)",
+      title: "Why Travel With Rihlah",
+      subtitle:
+        "Thoughtfully crafted journeys where spiritual peace, cultural depth, and modern comfort meet.",
+      pillar1Title: "100% Zabiha Halal Dining",
+      pillar1Desc:
+        "Every partner hotel, restaurant, and culinary stop is thoroughly verified for authentic halal food and alcohol-free family comfort.",
+      pillar2Title: "Prayer-Conscious Itineraries",
+      pillar2Desc:
+        "Daily schedules harmonize seamlessly with Salah timings, featuring nearby Masjids, quiet prayer spaces, and Qibla-ready rooms.",
+      pillar3Title: "Trusted Heritage Guides",
+      pillar3Desc:
+        "Travel alongside knowledgeable local Muslim guides who bring sacred sites and Islamic history to life with warmth and care.",
+    },
+    testimonials: {
+      kicker: "Traveler Reflections",
+      title: "Stories From Our Community",
+      items: [
+        {
+          quote:
+            '"Our family Umrah and Madinah Ziyarat was deeply peaceful. Having Haram-facing rooms and unhurried guidance for our elderly parents made every moment truly memorable."',
+          name: "Tariq & Amina Rahman",
+          location: "Dhaka, Bangladesh",
+        },
+        {
+          quote:
+            '"Walking through the Alhambra in Granada and praying at the Albaicin Mosque overlooking the hills felt surreal. Every meal was verified halal and effortless."',
+          name: "Dr. Yusuf Al-Mansoor",
+          location: "London, UK",
+        },
+        {
+          quote:
+            '"Istanbul with Rihlah was extraordinary—from Fajr near Sultanahmet to our private Bosphorus sunset cruise. Our guide knew every hidden Ottoman courtyard."',
+          name: "Khadija Siddiqui",
+          location: "Toronto, Canada",
+        },
+        {
+          quote:
+            '"Langkawi gave our children a clean, serene beachfront holiday without compromises. Prayer spaces and certified halal dining were thoughtfully arranged everywhere."',
+          name: "Imran & Nadia Karim",
+          location: "Kuala Lumpur, Malaysia",
+        },
+      ],
+    },
+    cta: {
+      kicker: "Begin Your Next Chapter",
+      title: "Ready To Plan Your Blessed Journey?",
+      subtitle:
+        "Browse our curated halal destinations or add a new community travel package directly to our catalog.",
+      browseBtn: "Browse Packages",
+      addBtn: "Add Destination",
+    },
+    footer: {
+      brandSubtitle:
+        "Purposeful journeys anchored in faith, comfort, and authentic Islamic hospitality across historic Muslim civilizations and serene halal retreats.",
+      tagline: "100% Halal Dining • Prayer-Friendly Itineraries",
+      newsletterTitle: "Travel Dispatches",
+      newsletterDesc: "Receive seasonal Umrah & Islamic heritage departure alerts.",
+      newsletterPlaceholder: "Enter your email",
+      subscribedMsg: "JazakAllahu Khayran! You are subscribed.",
+      navCol: "Navigation",
+      categoriesCol: "Tour Categories",
+      contactCol: "Salam Desk",
+      copyright: "© 2026 Rihlah Halal Journeys. Built for meaningful travel.",
+      footerNote: "Module 46 • Next.js + Express + MongoDB",
+    },
+    destinationsGrid: {
+      kicker: "Curated Halal Packages",
+      title: "Explore Halal Destinations",
+      subtitle:
+        "Discover Umrah journeys, Islamic heritage tours, and serene family-friendly retreats.",
+      addNewBtn: "Add New Package",
+      searchPlaceholder: "Search by destination, country, or keyword...",
+      maxBudget: "Max budget ($)",
+      resetFilters: "Reset Filters",
+      showingText: "Showing",
+      ofText: "of",
+      halalDestText: "halal destinations",
+      noResultsTitle: "No matching packages found",
+      noResultsDesc: "Try adjusting your search keywords, category, or budget filter.",
+      showAllBtn: "Show All Destinations",
+      perPerson: "/person",
+      viewDetails: "View Package & Details",
+      allCategoryPill: "All",
+    },
+    destinationDetails: {
+      back: "Back to Destinations",
+      edit: "Edit",
+      delete: "Delete",
+      reviews: "reviews",
+      diningStandard: "Halal Dining Standard",
+      prayerFacilities: "Prayer Facilities",
+      overview: "Journey Overview",
+      highlightsTitle: "Halal & Spiritual Highlights",
+      startingFrom: "Starting From",
+      perPerson: "per person",
+      nextDeparture: "Next Scheduled Departure",
+      requestBtn: "Request Halal Package",
+      requestDone: "Inquiry Recorded",
+      inquirySuccessMessage:
+        "JazakAllahu Khayran! Your package inquiry has been received by the Rihlah concierge.",
+      freeCancel: "Free cancellation up to 7 days before departure",
+      assistance: "Comprehensive Halal travel assistance",
+      supportDesk: "24/7 bilingual Salam support desk",
+      defaultHighlights: [
+        "100% Zabiha Halal meals throughout",
+        "Daily prayer-conscious itinerary pacing",
+        "Experienced Muslim heritage & local guide",
+        "Alcohol-free family-friendly accommodations",
+        "Airport transfers & curated site entry fees",
+      ],
+    },
+    addDestination: {
+      back: "Back to Destinations",
+      kicker: "Curate New Journey",
+      title: "Add Halal Travel Package",
+      subtitle:
+        "Publish a new Islamic heritage, Umrah, or family-friendly halal destination to MongoDB.",
+      nameLabel: "Destination Name",
+      namePlaceholder: "e.g., Makkah & Madinah Spiritual Umrah",
+      countryLabel: "Country",
+      countryPlaceholder: "e.g., Saudi Arabia",
+      categoryLabel: "Category",
+      categorySelectPlaceholder: "Select halal category",
+      priceLabel: "Price (USD)",
+      pricePlaceholder: "e.g., 1450",
+      durationLabel: "Duration",
+      durationPlaceholder: "e.g., 7 Days / 6 Nights",
+      diningLabel: "Halal Dining Standard",
+      diningPlaceholder: "e.g., 100% Zabiha Halal Certified",
+      prayerLabel: "Prayer & Masjid Facilities",
+      prayerPlaceholder: "e.g., Steps from Al-Haram or Nearby Masjids",
+      departureLabel: "Departure Date",
+      imageLabel: "Image URL or Path",
+      imageHint: "Must start with / or https://",
+      imagePlaceholder: "e.g., /images/istanbul.jpg or https://...",
+      presetLabel: "Preset:",
+      imagePreview: "Image Preview",
+      descLabel: "Journey Description",
+      descPlaceholder:
+        "Describe the spiritual highlights, Islamic heritage stops, and halal hospitality...",
+      resetBtn: "Reset",
+      submitBtn: "Add Travel Package",
+      savingBtn: "Saving Package...",
+    },
+    editDialog: {
+      trigger: "Edit",
+      title: "Edit Halal Travel Package",
+      desc: "Update package details, pricing, or halal facilities for",
+      cancel: "Cancel",
+      save: "Save Changes",
+      saving: "Saving...",
+    },
+    deleteDialog: {
+      trigger: "Delete",
+      title: "Delete this travel package?",
+      desc: "This action cannot be undone. It will permanently remove",
+      fromCatalog: "from your Rihlah destination catalog.",
+      cancel: "Cancel",
+      confirm: "Delete Package",
+      deleting: "Deleting...",
+    },
+  },
+  bn: {
+    common: {
+      halalCertified: "১০০% জবিহা হালাল সার্টিফাইড",
+      prayerSchedule: "নিকটবর্তী মসজিদ ও নামাযের সুব্যবস্থা",
+    },
+    nav: {
+      home: "প্রচ্ছদ",
+      destinations: "গন্তব্যসমূহ",
+      addDestination: "প্যাকেজ যোগ করুন",
+      addPackage: "প্যাকেজ যোগ করুন",
+      exploreTours: "ট্যুর খুঁজুন",
+      langSwitchLabel: "EN",
+    },
+    banner: {
+      badge: "নির্বাচিত হালাল ও আধ্যাত্মিক সফর",
+      headingLine1: "আবিষ্কার করুন পবিত্র ও",
+      headingLine2: "বরকতময় সফরসমূহ",
+      subheading:
+        "পবিত্র ওমরাহ ও যিয়ারত, ঐতিহাসিক মুসলিম ঐতিহ্য এবং হালাল পারিবারিক অবকাশের বিশ্বস্ত সঙ্গী। প্রতিদিনের নামাযের ওয়াক্ত ও ১০০% হালাল খাবার নিশ্চিত করে সাজানো প্রতিটি সফরসূচি।",
+      exploreBtn: "গন্তব্যসমূহ দেখুন",
+      addBtn: "নতুন প্যাকেজ যুক্ত করুন",
+      searchLabel: "গন্তব্য বা দেশ",
+      searchPlaceholder: "যেমন: মক্কা, ইস্তাম্বুল, গ্রানাডা...",
+      categoryLabel: "সফরের ধরন",
+      allCategories: "সকল হালাল ক্যাটাগরি",
+      budgetLabel: "সর্বোচ্চ বাজেট (USD)",
+      budgetPlaceholder: "যেমন: ১৬০০",
+      searchBtn: "অনুসন্ধান করুন",
+    },
+    categories: {
+      "Umrah & Ziyarat": "ওমরাহ ও যিয়ারত",
+      "Islamic Heritage": "ইসলামিক ঐতিহ্য",
+      "Halal Beach Resort": "হালাল বিচ রিসোর্ট",
+      "Nature & Mountain": "প্রকৃতি ও পাহাড়",
+      "Family Halal": "পারিবারিক হালাল",
+    },
+    whyChooseUs: {
+      kicker: "আমাদের আমানত (আস্থা ও বিশ্বস্ততা)",
+      title: "রিহলাহর সাথে কেন সফর করবেন?",
+      subtitle:
+        "আধ্যাত্মিক প্রশান্তি, ঐতিহাসিক গভীরতা ও আধুনিক আরামের অপূর্ব সমন্বয়ে গঠিত প্রতিটি ভ্রমণ অভিজ্ঞতা।",
+      pillar1Title: "১০০% জবিহা হালাল খাবার",
+      pillar1Desc:
+        "আমাদের প্রতিটি পার্টনার হোটেল ও রেস্তোরাঁ সম্পূর্ণ অ্যালকোহলমুক্ত এবং শতভাগ খাঁটি জবিহা হালাল খাবার পরিবেশনে সুনিশ্চিত।",
+      pillar2Title: "নামায-বান্ধব সফরসূচি",
+      pillar2Desc:
+        "দৈনন্দিন ভ্রমণসূচি ৫ ওয়াক্ত নামাযের সময়ের সাথে সামঞ্জস্য রেখে সাজানো; মাসজিদের সান্নিধ্য, নিভৃত ইবাদতখানা ও কিবলামুখী রুম।",
+      pillar3Title: "অভিজ্ঞ হেরিটেজ গাইড",
+      pillar3Desc:
+        "জ্ঞানী ও আন্তরিক স্থানীয় মুসলিম গাইডদের সাথে ভ্রমণ করুন, যিনি পবিত্র স্থানসমূহ ও গৌরবময় মুসলিম ইতিহাসকে জীবন্ত করে তোলেন।",
+    },
+    testimonials: {
+      kicker: "মুসাফিরদের অনুভূতি",
+      title: "আমাদের সফরসঙ্গীদের অভিজ্ঞতা",
+      items: [
+        {
+          quote:
+            '"আমাদের পরিবারের ওমরাহ ও মদিনা যিয়ারতের দিনগুলো ছিল পরম প্রশান্তিময়। বয়োবৃদ্ধ পিতা-মাতার জন্য হারাম শরীফের সন্নিকটে হোটেল ও আন্তরিক দিকনির্দেশনা সফরটিকে অবিস্মরণীয় করে রেখেছে।"',
+          name: "তারিক ও আমিনা রহমান",
+          location: "ঢাকা, বাংলাদেশ",
+        },
+        {
+          quote:
+            '"গ্রানাডার আলহামব্রা প্রাসাদে হাঁটা এবং পাহাড়ের চূড়ার আলবাইসিন মসজিদে সালাত আদায়ের অনুভূতি ছিল অবিশ্বাস্য। প্রতি বেলার খাবার ছিল শতভাগ হালাল ও সুস্বাদু।"',
+          name: "ডা. ইউসুফ আল-মনসুর",
+          location: "লন্ডন, যুক্তরাজ্য",
+        },
+        {
+          quote:
+            '"রিহলাহর সাথে ইস্তাম্বুল সফর ছিল অসাধারণ—সুলতানাহমেতের ফজর থেকে শুরু করে বসফরাসে সূর্যাস্তের ক্রুজ। আমাদের গাইড প্রতিটি প্রাচীন উসমানী স্থাপত্যের ইতিহাস সুন্দরভাবে তুলে ধরেন।"',
+          name: "খাদিজা সিদ্দিকী",
+          location: "টরন্টো, কানাডা",
+        },
+        {
+          quote:
+            '"লংকাউই আমাদের সন্তানদের জন্য কোনো রকম আপস ছাড়াই একটি পরিচ্ছন্ন ও শান্তিপূর্ণ পারিবারিক বিচ হলিডে উপহার দিয়েছে। সবখানে নামাযের স্থান ও হালাল খাবার সুব্যবস্থাপনা ছিল।"',
+          name: "ইমরান ও নাদিয়া করিম",
+          location: "কুয়ালালামপুর, মালয়েশিয়া",
+        },
+      ],
+    },
+    cta: {
+      kicker: "নতুন সফরের সূচনা",
+      title: "আপনার পবিত্র সফরের পরিকল্পনা করতে প্রস্তুত?",
+      subtitle:
+        "আমাদের নির্বাচিত হালাল গন্তব্যগুলো দেখুন অথবা আপনার পছন্দমতো নতুন কোনো ট্যুর প্যাকেজ সরাসরি যুক্ত করুন।",
+      browseBtn: "প্যাকেজগুলো দেখুন",
+      addBtn: "প্যাকেজ যুক্ত করুন",
+    },
+    footer: {
+      brandSubtitle:
+        "ঈমান, স্বাচ্ছন্দ্য ও খাঁটি ইসলামিক আতিথেয়তায় ঘেরা অর্থপূর্ণ সফর। গৌরবময় মুসলিম সভ্যতার নিদর্শন ও শান্ত হালাল অবকাশের বিশ্বস্ত সঙ্গী।",
+      tagline: "১০০% হালাল খাবার • নামায-বান্ধব ভ্রমণসূচি",
+      newsletterTitle: "সফরের বার্তা",
+      newsletterDesc: "মৌসুমি ওমরাহ ও ঐতিহাসিক হেরিটেজ সফরের নোটিফিকেশন পেতে যুক্ত থাকুন।",
+      newsletterPlaceholder: "আপনার ইমেইল লিখুন",
+      subscribedMsg: "জাযাকাল্লাহু খাইরান! আপনি সফলভাবে যুক্ত হয়েছেন।",
+      navCol: "নেভিগেশন",
+      categoriesCol: "ট্যুর ক্যাটাগরি",
+      contactCol: "সালাম ডেস্ক",
+      copyright: "© ২০২৬ রিহলাহ হালাল জার্নিস। বরকতময় সফরের সঙ্গী।",
+      footerNote: "মডিউল ৪৬ • নেক্সট জেএস + এক্সপ্রেস + মঙ্গোডিবি",
+    },
+    destinationsGrid: {
+      kicker: "নির্বাচিত হালাল প্যাকেজসমূহ",
+      title: "বিশ্বজুড়ে হালাল গন্তব্য",
+      subtitle:
+        "পবিত্র ওমরাহ সফর, মুসলিম ঐতিহ্য ভ্রমণ এবং মনোরম পারিবারিক অবকাশের প্যাকেজসমূহ।",
+      addNewBtn: "নতুন প্যাকেজ যুক্ত করুন",
+      searchPlaceholder: "গন্তব্য, দেশ বা কি-ওয়ার্ড দিয়ে খুঁজুন...",
+      maxBudget: "সর্বোচ্চ বাজেট ($)",
+      resetFilters: "ফিল্টার রিসেট",
+      showingText: "প্রদর্শিত",
+      ofText: "/",
+      halalDestText: "টি হালাল প্যাকেজ",
+      noResultsTitle: "কোনো প্যাকেজ পাওয়া যায়নি",
+      noResultsDesc: "আপনার অনুসন্ধানের শব্দ, ক্যাটাগরি বা বাজেট ফিল্টার পরিবর্তন করে চেষ্টা করুন।",
+      showAllBtn: "সব প্যাকেজ দেখুন",
+      perPerson: "/জনপ্রতি",
+      viewDetails: "প্যাকেজ ও বিবরণ দেখুন",
+      allCategoryPill: "সকল",
+    },
+    destinationDetails: {
+      back: "সব গন্তব্যে ফিরে যান",
+      edit: "সম্পাদনা",
+      delete: "মুছে ফেলুন",
+      reviews: "টি রিভিউ",
+      diningStandard: "হালাল ডাইনিং স্ট্যান্ডার্ড",
+      prayerFacilities: "নামায ও মসজিদের সুবিধা",
+      overview: "সফরের পূর্ণাঙ্গ বিবরণ",
+      highlightsTitle: "হালাল ও আধ্যাত্মিক বৈশিষ্ট্যসমূহ",
+      startingFrom: "মূল্য শুরু",
+      perPerson: "জনপ্রতি",
+      nextDeparture: "পরবর্তী সফরের তারিখ",
+      requestBtn: "প্যাকেজের জন্য যোগাযোগ করুন",
+      requestDone: "বার্তা গৃহীত হয়েছে",
+      inquirySuccessMessage:
+        "জাযাকাল্লাহু খাইরান! আপনার প্যাকেজ অনুসন্ধান বার্তাটি রিহলাহ কনসিয়ার্জ গ্রহণ করেছে।",
+      freeCancel: "যাত্রার ৭ দিন পূর্ব পর্যন্ত সম্পূর্ণ ফ্রিতে বুকিং বাতিলযোগ্য",
+      assistance: "সার্বিক হালাল ভ্রমণ সহায়তা ও গাইডেন্স",
+      supportDesk: "২৪/৭ দ্বিভাষিক সালাম সাপোর্ট ডেস্ক",
+      defaultHighlights: [
+        "সফরের সার্বক্ষণিক ১০০% জবিহা হালাল খাবার",
+        "দৈনিক সালাতের ওয়াক্ত অনুযায়ী সুশৃঙ্খল সফরসূচি",
+        "অভিজ্ঞ মুসলিম ইতিহাসবিদ ও স্থানীয় গাইডের সান্নিধ্য",
+        "অ্যালকোহলমুক্ত পারিবারিক ও আরামদায়ক আবাসন",
+        "এয়ারপোর্ট ট্রান্সফার ও দর্শনীয় স্থানের এন্ট্রি ফি অন্তর্ভুক্ত",
+      ],
+    },
+    addDestination: {
+      back: "সব গন্তব্যে ফিরে যান",
+      kicker: "নতুন সফরের সংযোজন",
+      title: "নতুন হালাল ট্রাভেল প্যাকেজ",
+      subtitle:
+        "ডাটাবেজে নতুন একটি ওমরাহ, মুসলিম হেরিটেজ বা হালাল পারিবারিক ট্যুর প্যাকেজ প্রকাশ করুন।",
+      nameLabel: "গন্তব্য / প্যাকেজের নাম",
+      namePlaceholder: "যেমন: মক্কা ও মদিনা আধ্যাত্মিক ওমরাহ সফর",
+      countryLabel: "দেশ",
+      countryPlaceholder: "যেমন: সৌদি আরব",
+      categoryLabel: "ক্যাটাগরি",
+      categorySelectPlaceholder: "হালাল ক্যাটাগরি বেছে নিন",
+      priceLabel: "মূল্য (USD)",
+      pricePlaceholder: "যেমন: ১৪৫০",
+      durationLabel: "সময়কাল",
+      durationPlaceholder: "যেমন: ৭ দিন / ৬ রাত",
+      diningLabel: "হালাল ডাইনিং স্ট্যান্ডার্ড",
+      diningPlaceholder: "যেমন: ১০০% জবিহা হালাল সার্টিফাইড",
+      prayerLabel: "নামায ও মসজিদের সুবিধা",
+      prayerPlaceholder: "যেমন: হারাম শরীফের সন্নিকটে অথবা নিয়মিত সালাত বিরতি",
+      departureLabel: "যাত্রার তারিখ",
+      imageLabel: "ছবির লিঙ্ক বা লোকাল পাথ",
+      imageHint: "অবশ্যই / অথবা https:// দিয়ে শুরু হতে হবে",
+      imagePlaceholder: "যেমন: /images/istanbul.jpg বা https://...",
+      presetLabel: "প্রিসেট:",
+      imagePreview: "ছবির প্রিভিউ",
+      descLabel: "সফরের বিবরণ",
+      descPlaceholder:
+        "পবিত্র ঐতিহাসিক স্থান, দর্শনীয় আয়োজন এবং হালাল আতিথেয়তার বিবরণ লিখুন...",
+      resetBtn: "রিসেট",
+      submitBtn: "প্যাকেজ যুক্ত করুন",
+      savingBtn: "সংরক্ষণ করা হচ্ছে...",
+    },
+    editDialog: {
+      trigger: "সম্পাদনা",
+      title: "হালাল ট্রাভেল প্যাকেজ সম্পাদনা",
+      desc: "প্যাকেজের বিবরণ, মূল্য বা হালাল সুযোগ-সুবিধা আপডেট করুন:",
+      cancel: "বাতিল",
+      save: "পরিবর্তন সংরক্ষণ করুন",
+      saving: "সংরক্ষণ হচ্ছে...",
+    },
+    deleteDialog: {
+      trigger: "মুছে ফেলুন",
+      title: "এই প্যাকেজটি মুছে ফেলতে চান?",
+      desc: "এই পদক্ষেপটি বাতিল করা যাবে না। এটি আপনার ক্যাটালগ থেকে চিরতরে মুছে ফেলবে:",
+      fromCatalog: "।",
+      cancel: "বাতিল",
+      confirm: "প্যাকেজ মুছুন",
+      deleting: "মুছে ফেলা হচ্ছে...",
+    },
+  },
+};

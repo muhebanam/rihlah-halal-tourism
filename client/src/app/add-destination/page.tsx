@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { DestinationFormFields } from "@/components/destination/DestinationFormFields";
 import { API_BASE_URL } from "@/lib/api";
 import type { DestinationFormPayload } from "@/lib/types/destinations";
+import { useLanguage } from "@/context/language-context";
 
 const initialForm: DestinationFormPayload = {
   name: "",
@@ -24,6 +25,7 @@ const initialForm: DestinationFormPayload = {
 
 export default function AddDestinationPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [form, setForm] = useState<DestinationFormPayload>(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,81 +68,83 @@ export default function AddDestinationPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Unable to connect to the server. Make sure server is running on port 8000."
+          : "An unexpected error occurred while adding the package."
       );
+    } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <main className="islamic-lattice-bg min-h-screen bg-background px-6 py-12">
-      <div className="mx-auto max-w-2xl">
+    <main className="w-full bg-[#FAF8F5] px-6 py-12">
+      <div className="mx-auto max-w-3xl">
         <Link
           href="/destinations"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-[#047857]"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider text-[#047857] uppercase transition-colors hover:text-[#064E3B]"
         >
           <ArrowLeft className="size-4" />
-          Back to Destinations
+          {t.addDestination.back}
         </Link>
 
-        <p className="mt-6 text-xs font-semibold tracking-[0.22em] text-[#8a6508] uppercase">
-          Curate New Journey
-        </p>
-        <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-[#064E3B] md:text-5xl">
-          Add Halal Travel Package
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Publish a new Islamic heritage, Umrah, or family-friendly halal
-          destination to MongoDB.
-        </p>
+        <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-10">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.22em] text-[#8a6508] uppercase">
+              {t.addDestination.kicker}
+            </p>
+            <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-[#064E3B] sm:text-4xl">
+              {t.addDestination.title}
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t.addDestination.subtitle}
+            </p>
+          </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-8 rounded-xl border border-border bg-card p-7 shadow-sm md:p-8"
-        >
           {error && (
-            <div className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
               {error}
             </div>
           )}
 
-          <DestinationFormFields
-            form={form}
-            onChange={updateField}
-            idPrefix="add"
-          />
+          <form onSubmit={handleSubmit} className="mt-8 grid gap-6">
+            <DestinationFormFields
+              form={form}
+              onChange={updateField}
+              idPrefix="new-dest"
+            />
 
-          <div className="mt-8 flex flex-wrap justify-end gap-3 border-t border-border pt-6">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={submitting}
-              onClick={() => setForm(initialForm)}
-            >
-              <RotateCcw className="size-4" />
-              Reset
-            </Button>
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="bg-[#047857] text-white hover:bg-[#064E3B]"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Saving Package...
-                </>
-              ) : (
-                <>
-                  <PackageCheck className="size-4 text-[#C9A227]" />
-                  Add Travel Package
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setForm(initialForm)}
+                disabled={submitting}
+                className="text-muted-foreground"
+              >
+                <RotateCcw className="size-4" />
+                {t.addDestination.resetBtn}
+              </Button>
+
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="bg-[#047857] text-white hover:bg-[#064E3B]"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    {t.addDestination.savingBtn}
+                  </>
+                ) : (
+                  <>
+                    <PackageCheck className="size-4 text-[#C9A227]" />
+                    {t.addDestination.submitBtn}
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </main>
   );
 }
-

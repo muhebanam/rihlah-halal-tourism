@@ -6,9 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search, Sparkles } from "lucide-react";
 import { HALAL_CATEGORIES } from "@/lib/types/destinations";
+import { useLanguage } from "@/context/language-context";
 
 export function Banner() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [maxPrice, setMaxPrice] = useState("");
@@ -40,19 +42,17 @@ export function Banner() {
       <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 pt-24 pb-44 text-center text-white md:pt-28">
         <span className="inline-flex items-center gap-2 rounded-full border border-[#C9A227]/50 bg-[#064E3B]/70 px-4 py-1.5 text-xs font-semibold tracking-widest text-[#F6E299] uppercase backdrop-blur-sm">
           <Sparkles className="size-3.5 text-[#C9A227]" />
-          Curated Halal & Spiritual Travel
+          {t.banner.badge}
         </span>
 
         <h1 className="mt-6 font-serif text-5xl leading-[1.08] font-semibold tracking-tight md:text-7xl">
-          Discover Sacred &amp;
+          {t.banner.headingLine1}
           <br />
-          Halal Journeys
+          {t.banner.headingLine2}
         </h1>
 
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/90 md:text-lg">
-          Explore Umrah &amp; Ziyarat sanctuaries, iconic Islamic heritage cities,
-          and peaceful family-friendly halal resorts designed around prayer times
-          and certified cuisine.
+          {t.banner.subheading}
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -60,14 +60,14 @@ export function Banner() {
             href="/destinations"
             className="flex items-center gap-3 rounded-lg bg-[#047857] px-7 py-3.5 text-sm font-semibold tracking-wider text-white uppercase shadow-lg transition-colors hover:bg-[#064E3B]"
           >
-            Explore Destinations
+            {t.banner.exploreBtn}
             <ArrowRight className="size-4 text-[#C9A227]" />
           </Link>
           <Link
             href="/add-destination"
             className="rounded-lg border border-[#C9A227]/60 bg-white/15 px-7 py-3.5 text-sm font-semibold tracking-wider text-white uppercase backdrop-blur-sm transition-colors hover:bg-white/25"
           >
-            Add Travel Package
+            {t.banner.addBtn}
           </Link>
         </div>
       </div>
@@ -82,12 +82,12 @@ export function Banner() {
             htmlFor="hero-search"
             className="block text-xs font-semibold tracking-wider text-[#C9A227] uppercase"
           >
-            Destination or Country
+            {t.banner.searchLabel}
           </label>
           <input
             id="hero-search"
             type="text"
-            placeholder="e.g., Makkah, Istanbul, Granada..."
+            placeholder={t.banner.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="mt-1 w-full bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
@@ -99,7 +99,7 @@ export function Banner() {
             htmlFor="hero-category"
             className="block text-xs font-semibold tracking-wider text-[#C9A227] uppercase"
           >
-            Journey Type
+            {t.banner.categoryLabel}
           </label>
           <select
             id="hero-category"
@@ -107,10 +107,10 @@ export function Banner() {
             onChange={(e) => setCategory(e.target.value)}
             className="mt-1 w-full bg-transparent text-sm text-white focus:outline-none [&>option]:bg-[#064E3B] [&>option]:text-white"
           >
-            <option value="All">All Halal Categories</option>
+            <option value="All">{t.banner.allCategories}</option>
             {HALAL_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
-                {cat}
+                {t.categories[cat as keyof typeof t.categories] || cat}
               </option>
             ))}
           </select>
@@ -121,13 +121,13 @@ export function Banner() {
             htmlFor="hero-budget"
             className="block text-xs font-semibold tracking-wider text-[#C9A227] uppercase"
           >
-            Max Budget (USD)
+            {t.banner.budgetLabel}
           </label>
           <input
             id="hero-budget"
             type="number"
             min="0"
-            placeholder="e.g., 1600"
+            placeholder={t.banner.budgetPlaceholder}
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             className="mt-1 w-full bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
@@ -139,10 +139,9 @@ export function Banner() {
           className="flex items-center justify-center gap-2 bg-[#C9A227] px-10 py-4 text-sm font-bold tracking-wider text-[#12231B] uppercase transition-colors hover:bg-[#d8b136] cursor-pointer"
         >
           <Search className="size-4" />
-          Search
+          {t.banner.searchBtn}
         </button>
       </form>
     </section>
   );
 }
-

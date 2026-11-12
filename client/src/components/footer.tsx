@@ -3,23 +3,25 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Compass, Mail, MapPin, Phone } from "lucide-react";
-
-const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "All Destinations", href: "/destinations" },
-  { label: "Add Destination", href: "/add-destination" },
-];
-
-const categoryLinks = [
-  { label: "Umrah & Ziyarat", href: "/destinations?category=Umrah+%26+Ziyarat" },
-  { label: "Islamic Heritage", href: "/destinations?category=Islamic+Heritage" },
-  { label: "Halal Beach Resorts", href: "/destinations?category=Halal+Beach+Resort" },
-  { label: "Nature & Mountains", href: "/destinations?category=Nature+%26+Mountain" },
-];
+import { useLanguage } from "@/context/language-context";
 
 export function Footer() {
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+
+  const quickLinks = [
+    { label: t.nav.home, href: "/" },
+    { label: t.destinationsGrid.title, href: "/destinations" },
+    { label: t.nav.addDestination, href: "/add-destination" },
+  ];
+
+  const categoryLinks = [
+    { label: t.categories["Umrah & Ziyarat"], href: "/destinations?category=Umrah+%26+Ziyarat" },
+    { label: t.categories["Islamic Heritage"], href: "/destinations?category=Islamic+Heritage" },
+    { label: t.categories["Halal Beach Resort"], href: "/destinations?category=Halal+Beach+Resort" },
+    { label: t.categories["Nature & Mountain"], href: "/destinations?category=Nature+%26+Mountain" },
+  ];
 
   const handleSubscribe = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,13 +45,11 @@ export function Footer() {
               </p>
             </div>
             <p className="mt-3 max-w-md text-sm text-[#FAF8F5]/75">
-              Purposeful journeys anchored in faith, comfort, and authentic
-              Islamic hospitality across historic Muslim civilizations and serene
-              halal retreats.
+              {t.footer.brandSubtitle}
             </p>
           </div>
           <p className="text-xs font-medium tracking-[0.2em] text-[#C9A227] uppercase">
-            100% Halal Dining • Prayer-Friendly Itineraries
+            {t.footer.tagline}
           </p>
         </div>
 
@@ -58,10 +58,10 @@ export function Footer() {
           {/* Newsletter */}
           <div>
             <h3 className="text-xs font-semibold tracking-widest text-[#C9A227] uppercase">
-              Travel Dispatches
+              {t.footer.newsletterTitle}
             </h3>
             <p className="mt-3 text-sm text-[#FAF8F5]/75">
-              Receive seasonal Umrah & Islamic heritage departure alerts.
+              {t.footer.newsletterDesc}
             </p>
             <form
               onSubmit={handleSubscribe}
@@ -69,7 +69,7 @@ export function Footer() {
             >
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t.footer.newsletterPlaceholder}
                 aria-label="Email address"
                 value={email}
                 onChange={(e) => {
@@ -82,14 +82,14 @@ export function Footer() {
               <button
                 type="submit"
                 aria-label="Subscribe"
-                className="px-3.5 text-[#C9A227] transition-colors hover:text-white"
+                className="px-3.5 text-[#C9A227] transition-colors hover:text-white cursor-pointer"
               >
                 <ArrowUpRight className="size-5" />
               </button>
             </form>
             {subscribed && (
               <p className="mt-2 text-xs text-[#C9A227]">
-                JazakAllahu Khayran! You are subscribed.
+                {t.footer.subscribedMsg}
               </p>
             )}
           </div>
@@ -97,16 +97,16 @@ export function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-xs font-semibold tracking-widest text-[#C9A227] uppercase">
-              Navigation
+              {t.footer.navCol}
             </h3>
-            <ul className="mt-4 space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.label}>
+            <ul className="mt-4 space-y-2.5 text-sm text-[#FAF8F5]/75">
+              {quickLinks.map((item) => (
+                <li key={item.href}>
                   <Link
-                    href={link.href}
-                    className="text-sm text-[#FAF8F5]/75 transition-colors hover:text-white"
+                    href={item.href}
+                    className="transition-colors hover:text-[#C9A227]"
                   >
-                    {link.label}
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -116,60 +116,54 @@ export function Footer() {
           {/* Categories */}
           <div>
             <h3 className="text-xs font-semibold tracking-widest text-[#C9A227] uppercase">
-              Tour Categories
+              {t.footer.categoriesCol}
             </h3>
-            <ul className="mt-4 space-y-3">
-              {categoryLinks.map((link) => (
-                <li key={link.label}>
+            <ul className="mt-4 space-y-2.5 text-sm text-[#FAF8F5]/75">
+              {categoryLinks.map((cat) => (
+                <li key={cat.label}>
                   <Link
-                    href={link.href}
-                    className="text-sm text-[#FAF8F5]/75 transition-colors hover:text-white"
+                    href={cat.href}
+                    className="transition-colors hover:text-[#C9A227]"
                   >
-                    {link.label}
+                    {cat.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Contact / Salam Desk */}
           <div>
             <h3 className="text-xs font-semibold tracking-widest text-[#C9A227] uppercase">
-              Salam Desk
+              {t.footer.contactCol}
             </h3>
             <ul className="mt-4 space-y-3 text-sm text-[#FAF8F5]/75">
-              <li className="flex items-center gap-2">
-                <Mail className="size-4 text-[#C9A227]" />
-                <a
-                  href="mailto:salam@rihlahjourneys.com"
-                  className="transition-colors hover:text-white"
-                >
-                  salam@rihlahjourneys.com
-                </a>
+              <li className="flex items-center gap-2.5">
+                <MapPin className="size-4 shrink-0 text-[#C9A227]" />
+                <span>{language === "bn" ? "ঢাকা • ইস্তাম্বুল • মক্কা" : "Dhaka • Istanbul • Makkah"}</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Phone className="size-4 text-[#C9A227]" />
+              <li className="flex items-center gap-2.5">
+                <Phone className="size-4 shrink-0 text-[#C9A227]" />
                 <span>+880 1700-000000</span>
               </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="size-4 text-[#C9A227]" />
-                <span>Dhaka • Makkah • Istanbul</span>
+              <li className="flex items-center gap-2.5">
+                <Mail className="size-4 shrink-0 text-[#C9A227]" />
+                <span>salam@rihlah-halal.com</span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/15 pt-6 sm:flex-row">
-          <p className="text-xs text-[#FAF8F5]/65">
-            © 2026 Rihlah Halal Journeys. Built for meaningful travel.
-          </p>
-          <p className="text-xs text-[#FAF8F5]/65">
-            Module 46 • Next.js + Express + MongoDB
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-[#FAF8F5]/60 md:flex-row">
+          <p>{t.footer.copyright}</p>
+          <p className="flex items-center gap-2">
+            <span>{t.footer.footerNote}</span>
+            <span>•</span>
+            <span className="text-[#C9A227]">{t.common.halalCertified}</span>
           </p>
         </div>
       </div>
     </footer>
   );
 }
-

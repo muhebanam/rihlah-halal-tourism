@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { API_BASE_URL } from "@/lib/api";
+import { useLanguage } from "@/context/language-context";
 
 export default function DeleteDestinationDialog({
   id,
@@ -25,6 +26,7 @@ export default function DeleteDestinationDialog({
   name: string;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,44 +66,51 @@ export default function DeleteDestinationDialog({
         render={
           <Button
             variant="outline"
-            className="border-destructive/30 bg-card text-destructive hover:bg-destructive/5 hover:text-destructive"
+            size="sm"
+            className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer"
           >
-            <Trash2 className="size-4" />
-            Delete
+            <Trash2 className="size-3.5" />
+            {t.deleteDialog.trigger}
           </Button>
         }
       />
-
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete this travel package?</AlertDialogTitle>
+          <AlertDialogTitle className="font-serif text-2xl text-red-950">
+            {t.deleteDialog.title}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. It will permanently remove{" "}
-            <span className="font-semibold text-foreground">{name}</span> from
-            your Rihlah destination catalog.
+            {t.deleteDialog.desc}{" "}
+            <span className="font-semibold text-foreground">{name}</span>{" "}
+            {t.deleteDialog.fromCatalog}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         {error && (
-          <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
             {error}
-          </p>
+          </div>
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={deleting}>
+            {t.deleteDialog.cancel}
+          </AlertDialogCancel>
           <AlertDialogAction
+            onClick={(e) => {
+              e.preventDefault();
+              handleDeleteDestination();
+            }}
             disabled={deleting}
-            onClick={handleDeleteDestination}
-            className="bg-destructive text-white hover:bg-destructive/90"
+            className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-600"
           >
             {deleting ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
-                Deleting...
+                {t.deleteDialog.deleting}
               </>
             ) : (
-              "Delete Package"
+              t.deleteDialog.confirm
             )}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -109,4 +118,3 @@ export default function DeleteDestinationDialog({
     </AlertDialog>
   );
 }
-

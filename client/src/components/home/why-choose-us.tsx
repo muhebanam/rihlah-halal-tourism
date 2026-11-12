@@ -1,41 +1,42 @@
-import { Compass, ShieldCheck, Utensils } from "lucide-react";
+"use client";
 
-const features = [
-  {
-    icon: Utensils,
-    title: "100% Zabiha Halal Dining",
-    description:
-      "Every partner hotel, restaurant, and culinary stop is thoroughly verified for authentic halal food and alcohol-free family comfort.",
-  },
-  {
-    icon: Compass,
-    title: "Prayer-Conscious Itineraries",
-    description:
-      "Daily schedules harmonize seamlessly with Salah timings, featuring nearby Masjids, quiet prayer spaces, and Qibla-ready rooms.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Trusted Heritage Guides",
-    description:
-      "Travel alongside knowledgeable local Muslim guides who bring sacred sites and Islamic history to life with warmth and care.",
-  },
-];
+import { Compass, ShieldCheck, Utensils } from "lucide-react";
+import { useLanguage } from "@/context/language-context";
 
 export function WhyChooseUs() {
+  const { t } = useLanguage();
+
+  const features = [
+    {
+      icon: Utensils,
+      title: t.whyChooseUs.pillar1Title,
+      description: t.whyChooseUs.pillar1Desc,
+    },
+    {
+      icon: Compass,
+      title: t.whyChooseUs.pillar2Title,
+      description: t.whyChooseUs.pillar2Desc,
+    },
+    {
+      icon: ShieldCheck,
+      title: t.whyChooseUs.pillar3Title,
+      description: t.whyChooseUs.pillar3Desc,
+    },
+  ];
+
   return (
     <section className="islamic-lattice-bg w-full border-t border-[#C9A227]/40 bg-[#F3EFE6] px-6 py-20">
       <div className="mx-auto max-w-7xl rounded-2xl border border-dashed border-[#047857]/30 bg-card/60 px-6 py-14 backdrop-blur-xs md:px-12">
         {/* Heading */}
         <div className="text-center">
           <p className="text-xs font-semibold tracking-[0.22em] text-[#8a6508] uppercase">
-            Our Amanah (Trust)
+            {t.whyChooseUs.kicker}
           </p>
           <h2 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-[#064E3B] md:text-5xl">
-            Why Travel With Rihlah
+            {t.whyChooseUs.title}
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-            Thoughtfully crafted journeys where spiritual peace, cultural depth,
-            and modern comfort meet.
+            {t.whyChooseUs.subtitle}
           </p>
         </div>
 
@@ -65,4 +66,3 @@ export function WhyChooseUs() {
     </section>
   );
 }
-

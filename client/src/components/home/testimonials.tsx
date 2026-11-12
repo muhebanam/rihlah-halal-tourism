@@ -10,37 +10,14 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const testimonials = [
-  {
-    quote:
-      '"Our family Umrah and Madinah Ziyarat was deeply peaceful. Having Haram-facing rooms and unhurried guidance for our elderly parents made every moment truly memorable."',
-    name: "Tariq & Amina Rahman",
-    location: "Dhaka, Bangladesh",
-  },
-  {
-    quote:
-      '"Walking through the Alhambra in Granada and praying at the Albaicin Mosque overlooking the hills felt surreal. Every meal was verified halal and effortless."',
-    name: "Dr. Yusuf Al-Mansoor",
-    location: "London, UK",
-  },
-  {
-    quote:
-      '"Istanbul with Rihlah was extraordinary—from Fajr near Sultanahmet to our private Bosphorus sunset cruise. Our guide knew every hidden Ottoman courtyard."',
-    name: "Khadija Siddiqui",
-    location: "Toronto, Canada",
-  },
-  {
-    quote:
-      '"Langkawi gave our children a clean, serene beachfront holiday without compromises. Prayer spaces and certified halal dining were thoughtfully arranged everywhere."',
-    name: "Imran & Nadia Karim",
-    location: "Kuala Lumpur, Malaysia",
-  },
-];
+import { useLanguage } from "@/context/language-context";
 
 export function Testimonials() {
+  const { t } = useLanguage();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
+
+  const testimonials = t.testimonials.items;
 
   React.useEffect(() => {
     if (!api) return;
@@ -61,10 +38,10 @@ export function Testimonials() {
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <div>
             <p className="text-xs font-semibold tracking-[0.22em] text-[#8a6508] uppercase">
-              Traveler Reflections
+              {t.testimonials.kicker}
             </p>
             <h2 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-[#064E3B] md:text-5xl">
-              Stories From Our Community
+              {t.testimonials.title}
             </h2>
           </div>
 
@@ -98,40 +75,41 @@ export function Testimonials() {
           className="mt-10 w-full"
         >
           <CarouselContent>
-            {testimonials.map((item) => (
-              <CarouselItem key={item.name} className="md:basis-1/2">
-                <article className="flex h-full flex-col justify-between rounded-xl border border-border bg-card p-8 shadow-sm">
-                  <div>
-                    <Quote className="size-8 text-[#C9A227]/70" />
-                    <p className="mt-4 text-base leading-relaxed text-foreground/90">
-                      {item.quote}
-                    </p>
+            {testimonials.map((item, idx) => (
+              <CarouselItem key={idx} className="md:basis-1/2">
+                <div className="h-full rounded-2xl border border-border bg-card p-8 shadow-sm">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-[#047857]/10 text-[#047857]">
+                    <Quote className="size-5" />
                   </div>
-                  <div className="mt-8 border-t border-border pt-4">
-                    <p className="font-serif text-xl font-semibold text-[#064E3B]">
+                  <blockquote className="mt-6 text-sm leading-relaxed text-foreground/90 italic">
+                    {item.quote}
+                  </blockquote>
+                  <div className="mt-6 border-t border-border pt-4">
+                    <p className="font-serif text-lg font-semibold text-foreground">
                       {item.name}
                     </p>
-                    <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+                    <p className="text-xs text-muted-foreground">
                       {item.location}
                     </p>
                   </div>
-                </article>
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
 
-        {/* Pagination Dots */}
-        <div className="mt-6 flex justify-center gap-2">
-          {testimonials.map((item, index) => (
+        <div className="mt-8 flex justify-center gap-2">
+          {testimonials.map((_, idx) => (
             <button
-              key={item.name}
+              key={idx}
               type="button"
-              aria-label={`Go to slide ${index + 1}`}
-              onClick={() => api?.scrollTo(index)}
+              onClick={() => api?.scrollTo(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
               className={cn(
                 "h-2 rounded-full transition-all cursor-pointer",
-                current === index ? "w-8 bg-[#047857]" : "w-2 bg-[#047857]/25"
+                current === idx
+                  ? "w-8 bg-[#047857]"
+                  : "w-2 bg-[#047857]/20 hover:bg-[#047857]/40"
               )}
             />
           ))}
@@ -140,4 +118,3 @@ export function Testimonials() {
     </section>
   );
 }
-

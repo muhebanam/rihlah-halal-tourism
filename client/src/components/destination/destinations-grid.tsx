@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SafeImage } from "@/components/ui/safe-image";
+import { useLanguage } from "@/context/language-context";
 
 interface DestinationsGridProps {
   destinations: IDestination[];
@@ -38,6 +39,7 @@ export function DestinationsGrid({
   initialMaxPrice = "",
   serverError = null,
 }: DestinationsGridProps) {
+  const { t, language, toBnNum, formatPrice, formatDuration } = useLanguage();
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [maxPrice, setMaxPrice] = useState(initialMaxPrice);
@@ -74,6 +76,11 @@ export function DestinationsGrid({
     setMaxPrice("");
   };
 
+  const getCategoryLabel = (cat: string) => {
+    if (cat === "All") return t.destinationsGrid.allCategoryPill;
+    return t.categories[cat as keyof typeof t.categories] || cat;
+  };
+
   return (
     <section className="w-full bg-background px-6 py-12">
       <div className="mx-auto max-w-7xl">
@@ -81,25 +88,24 @@ export function DestinationsGrid({
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-xs font-semibold tracking-[0.22em] text-[#8a6508] uppercase">
-              Curated Halal Packages
+              {t.destinationsGrid.kicker}
             </p>
             <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-[#064E3B] md:text-5xl">
-              Explore Halal Destinations
+              {t.destinationsGrid.title}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Discover Umrah journeys, Islamic heritage tours, and serene
-              family-friendly retreats.
+              {t.destinationsGrid.subtitle}
             </p>
           </div>
           <Link href="/add-destination">
             <Button className="bg-[#047857] text-white hover:bg-[#064E3B]">
               <PlusCircle className="size-4 text-[#C9A227]" />
-              Add New Package
+              {t.destinationsGrid.addNewBtn}
             </Button>
           </Link>
         </div>
 
-        {/* Server connection alert (if backend/DB isn't configured yet) */}
+        {/* Server connection alert */}
         {serverError && (
           <div className="mt-6 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">
             <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600" />
@@ -116,7 +122,7 @@ export function DestinationsGrid({
             <div className="relative">
               <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search by destination, country, or keyword..."
+                placeholder={t.destinationsGrid.searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
@@ -126,19 +132,19 @@ export function DestinationsGrid({
             <Input
               type="number"
               min="0"
-              placeholder="Max budget ($)"
+              placeholder={t.destinationsGrid.maxBudget}
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
             />
 
             {(searchTerm || selectedCategory !== "All" || maxPrice) && (
               <Button variant="outline" onClick={clearFilters}>
-                Reset Filters
+                {t.destinationsGrid.resetFilters}
               </Button>
             )}
           </div>
 
-          {/* Category Pills with aria-pressed */}
+          {/* Category Pills */}
           <div className="mt-4 flex flex-wrap gap-2">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat;
@@ -155,7 +161,7 @@ export function DestinationsGrid({
                       : "bg-secondary text-foreground/80 hover:bg-[#047857]/10 hover:text-[#064E3B]"
                   )}
                 >
-                  {cat}
+                  {getCategoryLabel(cat)}
                 </button>
               );
             })}
@@ -164,8 +170,13 @@ export function DestinationsGrid({
 
         {/* Count */}
         <p className="mt-6 text-sm text-muted-foreground">
-          Showing <span className="font-semibold text-foreground">{filteredDestinations.length}</span> of{" "}
-          {destinations.length} halal destinations
+          {t.destinationsGrid.showingText}{" "}
+          <span className="font-semibold text-foreground">
+            {language === "bn" ? toBnNum(filteredDestinations.length) : filteredDestinations.length}
+          </span>{" "}
+          {t.destinationsGrid.ofText}{" "}
+          {language === "bn" ? toBnNum(destinations.length) : destinations.length}{" "}
+          {t.destinationsGrid.halalDestText}
         </p>
 
         {/* Empty State */}
@@ -173,21 +184,23 @@ export function DestinationsGrid({
           <div className="mt-8 rounded-xl border border-dashed border-border bg-card p-12 text-center">
             <Sparkles className="mx-auto size-10 text-[#C9A227]" />
             <h2 className="mt-4 font-serif text-2xl font-semibold text-[#064E3B]">
-              No matching packages found
+              {t.destinationsGrid.noResultsTitle}
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
               {destinations.length === 0
-                ? "Connect your MongoDB Atlas URI in server/.env or add your first Halal travel package."
-                : "Try adjusting your search keywords, category, or budget filter."}
+                ? (language === "bn"
+                    ? "MongoDB Atlas-এ সংযোগ করুন অথবা আপনার প্রথম হালাল সফর প্যাকেজটি যোগ করুন।"
+                    : "Connect your MongoDB Atlas URI in server/.env or add your first Halal travel package.")
+                : t.destinationsGrid.noResultsDesc}
             </p>
             <div className="mt-6 flex justify-center gap-3">
               {destinations.length > 0 && (
                 <Button variant="outline" onClick={clearFilters}>
-                  Show All Destinations
+                  {t.destinationsGrid.showAllBtn}
                 </Button>
               )}
               <Link href="/add-destination">
-                <Button>Add New Package</Button>
+                <Button>{t.destinationsGrid.addNewBtn}</Button>
               </Link>
             </div>
           </div>
@@ -212,10 +225,12 @@ export function DestinationsGrid({
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <span className="absolute top-2.5 left-2.5 rounded-full bg-[#064E3B]/90 px-2.5 py-1 text-[11px] font-semibold text-[#F6E299] backdrop-blur-xs">
-                    {destination.category}
+                    {t.categories[destination.category as keyof typeof t.categories] || destination.category}
                   </span>
                   <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm">
-                    {getDestinationRating(destination._id)}
+                    {language === "bn"
+                      ? toBnNum(getDestinationRating(destination._id))
+                      : getDestinationRating(destination._id)}
                     <Star className="size-3 fill-[#C9A227] text-[#C9A227]" />
                   </span>
                 </Link>
@@ -237,9 +252,9 @@ export function DestinationsGrid({
                       </h2>
                     </Link>
                     <p className="shrink-0 text-base font-bold text-[#064E3B]">
-                      ${destination.price}
+                      {formatPrice(destination.price)}
                       <span className="text-xs font-normal text-muted-foreground">
-                        /person
+                        {t.destinationsGrid.perPerson}
                       </span>
                     </p>
                   </div>
@@ -247,12 +262,12 @@ export function DestinationsGrid({
                   <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
                     <p className="flex items-center gap-1.5">
                       <Calendar className="size-3.5 text-[#C9A227]" />
-                      {destination.duration}
+                      {formatDuration(destination.duration)}
                     </p>
                     <p className="flex items-center gap-1.5 truncate">
                       <Utensils className="size-3.5 shrink-0 text-[#047857]" />
                       <span className="truncate">
-                        {destination.halalDining || "100% Zabiha Halal Certified"}
+                        {destination.halalDining || t.common.halalCertified}
                       </span>
                     </p>
                   </div>
@@ -262,7 +277,7 @@ export function DestinationsGrid({
                       href={`/destinations/${destination._id}`}
                       className="inline-flex items-center gap-1 text-xs font-bold tracking-wider text-[#047857] uppercase transition-colors hover:text-[#064E3B]"
                     >
-                      View Package &amp; Details
+                      {t.destinationsGrid.viewDetails}
                       <ArrowUpRight className="size-3.5 text-[#C9A227]" />
                     </Link>
                   </div>
