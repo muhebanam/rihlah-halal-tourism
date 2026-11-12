@@ -4,6 +4,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { seedDestinations } from "./data/seedDestinations.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,10 +47,28 @@ app.use(express.json({ limit: "100kb" }));
 let mongoClientInstance = null;
 let destinationCollection = null;
 let metaCollection = null;
+let userCollection = null;
+const JWT_SECRET = process.env.JWT_SECRET || "rihlah_secure_jwt_secret_batch14_2026";
 let dbStatus = {
   connected: false,
   message: "Initializing database connection...",
 };
+
+function verifyToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Access denied. No authentication token provided." });
+  }
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ error: "Invalid or expired token. Please log in again." });
+  }
+}
 
 function escapeRegex(text) {
   return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -135,9 +155,11 @@ async function connectToMongoDB() {
     const db = mongoClientInstance.db(DB_NAME);
     destinationCollection = db.collection("destinations");
     metaCollection = db.collection("meta");
+    userCollection = db.collection("users");
 
-    // Ensure category index for performant filtering
+    // Ensure indexes
     await destinationCollection.createIndex({ category: 1 });
+    await userCollection.createIndex({ email: 1 }, { unique: true }).catch(() => {});
 
     // Auto-seed once on very first empty database connection
     const alreadySeeded = await metaCollection.findOne({ _id: "initial_seed" });
@@ -345,6 +367,229 @@ app.delete("/destination/:id", requireDatabase, async (req, res) => {
   } catch (error) {
     console.error("Error deleting destination:", error);
     res.status(500).json({ error: "Failed to delete destination" });
+  }
+});
+
+// -------------------------------------------------------------
+// User Authentication & Profile Routes
+// -------------------------------------------------------------
+
+function sanitizeUser(user) {
+  if (!user) return null;
+  const { password, ...safeUser } = user;
+  return {
+    ...safeUser,
+    id: safeUser._id ? safeUser._id.toString() : safeUser.id,
+  };
+}
+
+// User Registration
+app.post("/api/auth/register", requireDatabase, async (req, res) => {
+  try {
+    const { name, email, password, avatarUrl } = req.body || {};
+
+    if (!name || typeof name !== "string" || name.trim().length < 2) {
+      return res.status(400).json({ error: "Please enter a valid name (at least 2 characters)." });
+    }
+
+    if (!email || typeof email !== "string" || !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      return res.status(400).json({ error: "Please provide a valid email address." });
+    }
+
+    if (!password || typeof password !== "string" || password.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters long." });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await userCollection.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(409).json({ error: "An account with this email already exists. Please log in." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const defaultAvatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
+      name.trim()
+    )}&backgroundColor=047857,064e3b&textColor=f6e299`;
+
+    const newUser = {
+      name: name.trim(),
+      email: normalizedEmail,
+      password: hashedPassword,
+      avatarUrl: avatarUrl?.trim() || defaultAvatar,
+      phone: "",
+      country: "Bangladesh",
+      bio: "Traveler on a sacred journey",
+      role: "traveler",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const result = await userCollection.insertOne(newUser);
+    const userId = result.insertedId.toString();
+
+    const token = jwt.sign(
+      { userId, email: newUser.email, role: newUser.role },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({
+      message: "Registration successful",
+      token,
+      user: sanitizeUser({ ...newUser, _id: result.insertedId }),
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ error: "Failed to register user account." });
+  }
+});
+
+// User Login
+app.post("/api/auth/login", requireDatabase, async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required." });
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const user = await userCollection.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    const isMatch = await bcrypt.compare(String(password), user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id.toString(), email: user.email, role: user.role || "traveler" },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: sanitizeUser(user),
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Failed to log in." });
+  }
+});
+
+// 1-Click Demo Login
+app.post("/api/auth/demo-login", requireDatabase, async (req, res) => {
+  try {
+    const demoEmail = "muheb@rihlah.com";
+    let demoUser = await userCollection.findOne({ email: demoEmail });
+
+    if (!demoUser) {
+      const hashedPassword = await bcrypt.hash("RihlahPass2026", 10);
+      const newDemo = {
+        name: "মুহিব আনাম (Muheb Anam)",
+        email: demoEmail,
+        password: hashedPassword,
+        avatarUrl:
+          "https://api.dicebear.com/7.x/initials/svg?seed=Muheb%20Anam&backgroundColor=047857,064e3b&textColor=f6e299",
+        phone: "+880 1700-000000",
+        country: "বাংলাদেশ",
+        bio: "আধ্যাত্মিক ভ্রমণপ্রেমী ও হালাল ট্যুরিজম অনুসন্ধানকারী",
+        role: "traveler",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const result = await userCollection.insertOne(newDemo);
+      demoUser = { ...newDemo, _id: result.insertedId };
+    }
+
+    const token = jwt.sign(
+      { userId: demoUser._id.toString(), email: demoUser.email, role: demoUser.role || "traveler" },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Demo login successful",
+      token,
+      user: sanitizeUser(demoUser),
+    });
+  } catch (error) {
+    console.error("Demo login error:", error);
+    res.status(500).json({ error: "Failed to perform demo login." });
+  }
+});
+
+// Current Authenticated User (Profile Check)
+app.get("/api/auth/me", requireDatabase, verifyToken, async (req, res) => {
+  try {
+    if (!ObjectId.isValid(req.user.userId)) {
+      return res.status(400).json({ error: "Invalid user token identifier." });
+    }
+
+    const user = await userCollection.findOne({
+      _id: new ObjectId(req.user.userId),
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User account not found." });
+    }
+
+    res.json({ user: sanitizeUser(user) });
+  } catch (error) {
+    console.error("Fetch profile error:", error);
+    res.status(500).json({ error: "Failed to retrieve user profile." });
+  }
+});
+
+// Update Profile
+app.patch("/api/auth/profile", requireDatabase, verifyToken, async (req, res) => {
+  try {
+    if (!ObjectId.isValid(req.user.userId)) {
+      return res.status(400).json({ error: "Invalid user token identifier." });
+    }
+
+    const { name, phone, country, bio, avatarUrl } = req.body || {};
+    const updates = { updatedAt: new Date().toISOString() };
+
+    if (name && typeof name === "string" && name.trim()) {
+      updates.name = name.trim();
+    }
+    if (phone !== undefined) {
+      updates.phone = String(phone).trim();
+    }
+    if (country !== undefined) {
+      updates.country = String(country).trim();
+    }
+    if (bio !== undefined) {
+      updates.bio = String(bio).trim();
+    }
+    if (avatarUrl && typeof avatarUrl === "string") {
+      updates.avatarUrl = avatarUrl.trim();
+    }
+
+    const result = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(req.user.userId) },
+      { $set: updates },
+      { returnDocument: "after" }
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "User account not found." });
+    }
+
+    res.json({
+      message: "Profile updated successfully",
+      user: sanitizeUser(result),
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ error: "Failed to update profile." });
   }
 });
 

@@ -3,15 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Globe, Menu, PlusCircle, X } from "lucide-react";
+import {
+  Compass,
+  Globe,
+  LogIn,
+  LogOut,
+  Menu,
+  PlusCircle,
+  User,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/language-context";
+import { useAuth } from "@/context/auth-context";
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
+  const { user, logout } = useAuth();
 
   const navLinks = [
     { href: "/", label: t.nav.home },
@@ -73,7 +84,7 @@ export function Navbar() {
           </div>
         </Link>
 
-        {/* Right: Quick Action & Language Switcher */}
+        {/* Right: Quick Action, Auth State & Language Switcher */}
         <div className="flex items-center gap-2.5">
           {/* Language Switcher Pill */}
           <button
@@ -86,15 +97,62 @@ export function Navbar() {
             <span>{t.nav.langSwitchLabel}</span>
           </button>
 
-          <Link href="/add-destination" className="hidden sm:inline-flex">
-            <Button variant="outline" size="sm" className="border-[#047857]/30 text-[#064E3B] hover:bg-[#047857]/5">
+          {/* User Auth Buttons or Profile Badge */}
+          {user ? (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/profile"
+                className="flex items-center gap-2 rounded-full border border-border bg-card p-1 pr-3 hover:border-[#047857]/50 transition-colors"
+                title={user.name}
+              >
+                <div className="flex size-7 items-center justify-center rounded-full border border-[#047857]/30 bg-[#047857] text-xs font-bold text-[#F6E299]">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="hidden text-xs font-semibold text-foreground lg:inline-block max-w-[100px] truncate">
+                  {user.name.split(" ")[0]}
+                </span>
+              </Link>
+              <button
+                type="button"
+                onClick={logout}
+                title={t.nav.logout}
+                className="rounded-full p-2 text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-foreground/80 hover:text-[#064E3B]"
+                >
+                  <LogIn className="size-4 text-[#047857]" />
+                  {t.nav.login}
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button
+                  size="sm"
+                  className="bg-[#C9A227] text-[#12231B] font-semibold hover:bg-[#d8b136]"
+                >
+                  <User className="size-4" />
+                  {t.nav.register}
+                </Button>
+              </Link>
+            </div>
+          )}
+
+          <Link href="/add-destination" className="hidden xl:inline-flex">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[#047857]/30 text-[#064E3B] hover:bg-[#047857]/5"
+            >
               <PlusCircle className="size-4 text-[#C9A227]" />
               {t.nav.addPackage}
-            </Button>
-          </Link>
-          <Link href="/destinations">
-            <Button size="sm" className="bg-[#047857] text-white hover:bg-[#064E3B]">
-              {t.nav.exploreTours}
             </Button>
           </Link>
         </div>
@@ -103,7 +161,58 @@ export function Navbar() {
       {/* Mobile Dropdown */}
       {mobileOpen && (
         <div className="border-t border-border bg-card px-6 py-4 md:hidden">
-          <ul className="flex flex-col gap-3">
+          {/* User Profile Summary (Mobile) */}
+          {user ? (
+            <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
+              <Link
+                href="/profile"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3"
+              >
+                <div className="flex size-10 items-center justify-center rounded-full border border-[#047857]/30 bg-[#047857] text-sm font-bold text-[#F6E299]">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-serif text-sm font-semibold text-foreground">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                </div>
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  setMobileOpen(false);
+                }}
+                className="rounded-lg border border-red-200 p-2 text-red-600 hover:bg-red-50"
+                title={t.nav.logout}
+              >
+                <LogOut className="size-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="mb-4 grid grid-cols-2 gap-2 border-b border-border pb-3">
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-1.5 rounded-lg border border-border py-2 text-xs font-semibold text-foreground hover:bg-muted"
+              >
+                <LogIn className="size-3.5 text-[#047857]" />
+                {t.nav.login}
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-[#C9A227] py-2 text-xs font-semibold text-[#12231B] hover:bg-[#d8b136]"
+              >
+                <User className="size-3.5" />
+                {t.nav.register}
+              </Link>
+            </div>
+          )}
+
+          <ul className="flex flex-col gap-2.5">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
@@ -120,6 +229,22 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
+            {user && (
+              <li>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "block rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    isActive("/profile")
+                      ? "bg-[#047857]/10 text-[#064E3B]"
+                      : "text-foreground/80 hover:bg-muted"
+                  )}
+                >
+                  {t.nav.profile}
+                </Link>
+              </li>
+            )}
             <li className="pt-2 border-t border-border">
               <button
                 type="button"
