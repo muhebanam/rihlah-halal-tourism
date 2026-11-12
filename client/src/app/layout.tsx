@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Cormorant_Garamond } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -14,6 +15,23 @@ const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-serif",
+});
+
+const solaimanLipi = localFont({
+  src: [
+    {
+      path: "../../public/fonts/SolaimanLipi.woff",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/SolaimanLipi.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-solaiman",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -33,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakarta.variable} ${cormorant.variable} h-full antialiased`}
+      className={`${plusJakarta.variable} ${cormorant.variable} ${solaimanLipi.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <LanguageProvider>
@@ -45,4 +63,3 @@ export default function RootLayout({
     </html>
   );
 }
-
