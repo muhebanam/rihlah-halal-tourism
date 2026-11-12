@@ -19,6 +19,7 @@ import type {
   IDestination,
 } from "@/lib/types/destinations";
 import { useLanguage } from "@/context/language-context";
+import { destinationNameBnMap } from "@/lib/i18n/destination-translations";
 
 function toFormState(destination: IDestination): DestinationFormPayload {
   return {
@@ -42,7 +43,7 @@ export default function EditDestinationDialog({
   destination: IDestination;
 }) {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<DestinationFormPayload>(() =>
     toFormState(destination)
@@ -94,6 +95,11 @@ export default function EditDestinationDialog({
     }
   };
 
+  const localizedName =
+    language === "bn"
+      ? destinationNameBnMap[destination.name] || destination.name
+      : destination.name;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
@@ -117,7 +123,7 @@ export default function EditDestinationDialog({
           <DialogDescription>
             {t.editDialog.desc}{" "}
             <span className="font-medium text-foreground">
-              {destination.name}
+              {localizedName}
             </span>
           </DialogDescription>
         </DialogHeader>

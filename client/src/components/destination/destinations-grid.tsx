@@ -23,6 +23,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SafeImage } from "@/components/ui/safe-image";
 import { useLanguage } from "@/context/language-context";
+import {
+  countryBnMap,
+  destinationNameBnMap,
+  localizeDestination,
+} from "@/lib/i18n/destination-translations";
 
 interface DestinationsGridProps {
   destinations: IDestination[];
@@ -54,11 +59,20 @@ export function DestinationsGrid({
       const matchesCategory =
         selectedCategory === "All" || dest.category === selectedCategory;
 
+      const bnName = destinationNameBnMap[dest.name]?.toLowerCase() || "";
+      const bnCountry = countryBnMap[dest.country]?.toLowerCase() || "";
+      const bnCategory = (
+        t.categories[dest.category as keyof typeof t.categories] || ""
+      ).toLowerCase();
+
       const matchesSearch =
         !query ||
         dest.name.toLowerCase().includes(query) ||
+        bnName.includes(query) ||
         dest.country.toLowerCase().includes(query) ||
+        bnCountry.includes(query) ||
         dest.category.toLowerCase().includes(query) ||
+        bnCategory.includes(query) ||
         dest.description.toLowerCase().includes(query);
 
       const matchesPrice =
@@ -68,7 +82,7 @@ export function DestinationsGrid({
 
       return matchesCategory && matchesSearch && matchesPrice;
     });
-  }, [destinations, searchTerm, selectedCategory, maxPrice]);
+  }, [destinations, searchTerm, selectedCategory, maxPrice, t]);
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -207,83 +221,86 @@ export function DestinationsGrid({
         ) : (
           /* Cards Grid */
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredDestinations.map((destination) => (
-              <article
-                key={destination._id}
-                className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-              >
-                {/* Image linked */}
-                <Link
-                  href={`/destinations/${destination._id}`}
-                  className="relative h-52 w-full overflow-hidden rounded-lg bg-muted block"
+            {filteredDestinations.map((destination) => {
+              const item = localizeDestination(destination, language);
+              return (
+                <article
+                  key={destination._id}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
                 >
-                  <SafeImage
-                    src={destination.imageUrl || "/images/banner.jpg"}
-                    alt={destination.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <span className="absolute top-2.5 left-2.5 rounded-full bg-[#064E3B]/90 px-2.5 py-1 text-[11px] font-semibold text-[#F6E299] backdrop-blur-xs">
-                    {t.categories[destination.category as keyof typeof t.categories] || destination.category}
-                  </span>
-                  <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm">
-                    {language === "bn"
-                      ? toBnNum(getDestinationRating(destination._id))
-                      : getDestinationRating(destination._id)}
-                    <Star className="size-3 fill-[#C9A227] text-[#C9A227]" />
-                  </span>
-                </Link>
+                  {/* Image linked */}
+                  <Link
+                    href={`/destinations/${destination._id}`}
+                    className="relative h-52 w-full overflow-hidden rounded-lg bg-muted block"
+                  >
+                    <SafeImage
+                      src={destination.imageUrl || "/images/banner.jpg"}
+                      alt={item.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute top-2.5 left-2.5 rounded-full bg-[#064E3B]/90 px-2.5 py-1 text-[11px] font-semibold text-[#F6E299] backdrop-blur-xs">
+                      {t.categories[destination.category as keyof typeof t.categories] || destination.category}
+                    </span>
+                    <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm">
+                      {language === "bn"
+                        ? toBnNum(getDestinationRating(destination._id))
+                        : getDestinationRating(destination._id)}
+                      <Star className="size-3 fill-[#C9A227] text-[#C9A227]" />
+                    </span>
+                  </Link>
 
-                {/* Details */}
-                <div className="flex flex-1 flex-col px-1 pt-4 pb-1">
-                  <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-[#047857] uppercase">
-                    <MapPin className="size-3.5" />
-                    {destination.country}
-                  </p>
-
-                  <div className="mt-1.5 flex items-baseline justify-between gap-2">
-                    <Link
-                      href={`/destinations/${destination._id}`}
-                      className="min-w-0 flex-1"
-                    >
-                      <h2 className="truncate font-serif text-xl font-semibold text-foreground hover:text-[#047857] transition-colors">
-                        {destination.name}
-                      </h2>
-                    </Link>
-                    <p className="shrink-0 text-base font-bold text-[#064E3B]">
-                      {formatPrice(destination.price)}
-                      <span className="text-xs font-normal text-muted-foreground">
-                        {t.destinationsGrid.perPerson}
-                      </span>
+                  {/* Details */}
+                  <div className="flex flex-1 flex-col px-1 pt-4 pb-1">
+                    <p className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-[#047857] uppercase">
+                      <MapPin className="size-3.5" />
+                      {item.country}
                     </p>
-                  </div>
 
-                  <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
-                    <p className="flex items-center gap-1.5">
-                      <Calendar className="size-3.5 text-[#C9A227]" />
-                      {formatDuration(destination.duration)}
-                    </p>
-                    <p className="flex items-center gap-1.5 truncate">
-                      <Utensils className="size-3.5 shrink-0 text-[#047857]" />
-                      <span className="truncate">
-                        {destination.halalDining || t.common.halalCertified}
-                      </span>
-                    </p>
-                  </div>
+                    <div className="mt-1.5 flex items-baseline justify-between gap-2">
+                      <Link
+                        href={`/destinations/${destination._id}`}
+                        className="min-w-0 flex-1"
+                      >
+                        <h2 className="truncate font-serif text-xl font-semibold text-foreground hover:text-[#047857] transition-colors">
+                          {item.name}
+                        </h2>
+                      </Link>
+                      <p className="shrink-0 text-base font-bold text-[#064E3B]">
+                        {formatPrice(destination.price)}
+                        <span className="text-xs font-normal text-muted-foreground">
+                          {t.destinationsGrid.perPerson}
+                        </span>
+                      </p>
+                    </div>
 
-                  <div className="mt-auto pt-4">
-                    <Link
-                      href={`/destinations/${destination._id}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold tracking-wider text-[#047857] uppercase transition-colors hover:text-[#064E3B]"
-                    >
-                      {t.destinationsGrid.viewDetails}
-                      <ArrowUpRight className="size-3.5 text-[#C9A227]" />
-                    </Link>
+                    <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
+                      <p className="flex items-center gap-1.5">
+                        <Calendar className="size-3.5 text-[#C9A227]" />
+                        {formatDuration(destination.duration)}
+                      </p>
+                      <p className="flex items-center gap-1.5 truncate">
+                        <Utensils className="size-3.5 shrink-0 text-[#047857]" />
+                        <span className="truncate">
+                          {item.halalDining || t.common.halalCertified}
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="mt-auto pt-4">
+                      <Link
+                        href={`/destinations/${destination._id}`}
+                        className="inline-flex items-center gap-1 text-xs font-bold tracking-wider text-[#047857] uppercase transition-colors hover:text-[#064E3B]"
+                      >
+                        {t.destinationsGrid.viewDetails}
+                        <ArrowUpRight className="size-3.5 text-[#C9A227]" />
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>

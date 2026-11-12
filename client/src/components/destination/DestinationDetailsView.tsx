@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import type { IDestination } from "@/lib/types/destinations";
 import {
-  formatDepartureDate,
   getDestinationRating,
   getDestinationReviewsCount,
 } from "@/lib/format";
@@ -21,6 +20,10 @@ import DeleteDestinationDialog from "@/components/destination/DeleteDestinationD
 import { BookingSidebarCard } from "@/components/destination/BookingSidebarCard";
 import { SafeImage } from "@/components/ui/safe-image";
 import { useLanguage } from "@/context/language-context";
+import {
+  formatBilingualDepartureDate,
+  localizeDestination,
+} from "@/lib/i18n/destination-translations";
 
 export function DestinationDetailsView({
   destination,
@@ -29,6 +32,7 @@ export function DestinationDetailsView({
 }) {
   const { t, language, toBnNum, formatDuration } = useLanguage();
 
+  const item = localizeDestination(destination, language);
   const highlights = t.destinationDetails.defaultHighlights;
 
   const rating = getDestinationRating(destination._id);
@@ -50,7 +54,7 @@ export function DestinationDetailsView({
           <EditDestinationDialog destination={destination} />
           <DeleteDestinationDialog
             id={destination._id}
-            name={destination.name}
+            name={item.name}
           />
         </div>
       </div>
@@ -59,7 +63,7 @@ export function DestinationDetailsView({
       <div className="relative mt-6 h-72 w-full overflow-hidden rounded-2xl border border-border bg-muted shadow-sm md:h-96">
         <SafeImage
           src={destination.imageUrl || "/images/banner.jpg"}
-          alt={destination.name}
+          alt={item.name}
           fill
           priority
           sizes="100vw"
@@ -77,11 +81,11 @@ export function DestinationDetailsView({
           <div>
             <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-[#047857] uppercase">
               <MapPin className="size-4" />
-              {destination.country}
+              {item.country}
             </p>
 
             <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-[#064E3B] md:text-5xl">
-              {destination.name}
+              {item.name}
             </h1>
 
             <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
@@ -108,7 +112,7 @@ export function DestinationDetailsView({
                   {t.destinationDetails.diningStandard}
                 </p>
                 <p className="mt-1.5 text-sm font-medium text-foreground">
-                  {destination.halalDining || t.common.halalCertified}
+                  {item.halalDining || t.common.halalCertified}
                 </p>
               </div>
 
@@ -118,7 +122,7 @@ export function DestinationDetailsView({
                   {t.destinationDetails.prayerFacilities}
                 </p>
                 <p className="mt-1.5 text-sm font-medium text-foreground">
-                  {destination.prayerFacilities || t.common.prayerSchedule}
+                  {item.prayerFacilities || t.common.prayerSchedule}
                 </p>
               </div>
             </div>
@@ -127,20 +131,20 @@ export function DestinationDetailsView({
               {t.destinationDetails.overview}
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
-              {destination.description}
+              {item.description}
             </p>
 
             <h2 className="mt-8 font-serif text-2xl font-semibold text-[#064E3B]">
               {t.destinationDetails.highlightsTitle}
             </h2>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-              {highlights.map((item, idx) => (
+              {highlights.map((highlight, idx) => (
                 <li
                   key={idx}
                   className="flex items-center gap-2.5 text-sm text-foreground/85"
                 >
                   <Check className="size-4 shrink-0 text-[#047857]" />
-                  {item}
+                  {highlight}
                 </li>
               ))}
             </ul>
@@ -149,8 +153,8 @@ export function DestinationDetailsView({
           {/* Right Booking Sidebar */}
           <BookingSidebarCard
             price={destination.price}
-            departureDate={formatDepartureDate(destination.departureDate)}
-            destinationName={destination.name}
+            departureDate={formatBilingualDepartureDate(destination.departureDate, language)}
+            destinationName={item.name}
           />
         </div>
       </div>
