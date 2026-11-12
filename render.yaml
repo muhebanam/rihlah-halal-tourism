@@ -14,3 +14,4 @@ services:
         sync: false
       - key: CLIENT_URL
         value: https://rihlah-halal-tourism.vercel.app,http://localhost:3000
+
