@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: rihlah-server
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DB_NAME
+        value: rihlah
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        value: https://rihlah-halal-tourism.vercel.app,http://localhost:3000

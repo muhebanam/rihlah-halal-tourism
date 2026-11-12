@@ -23,7 +23,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# OS & Editor
+# Credentials & secrets
+Database User.txt
+*.key
+*.pem
 .DS_Store
 Thumbs.db
 .vscode/

@@ -1,6 +1,12 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { MongoClient } from "mongodb";
 import { seedDestinations } from "./data/seedDestinations.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config();
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME || "rihlah";

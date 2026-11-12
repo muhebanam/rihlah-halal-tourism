@@ -1,8 +1,14 @@
 import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 import cors from "cors";
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { seedDestinations } from "./data/seedDestinations.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
